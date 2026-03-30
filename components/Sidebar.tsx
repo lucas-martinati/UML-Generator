@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Entity, Attribute, Association, Connection } from '../types';
+import { Entity, Attribute, Association, Connection, RelationType } from '../types';
 import { Plus, Trash2, ArrowRightLeft, Database, Download, Upload, XCircle, Image, Sun, Moon } from 'lucide-react';
 import { useTheme } from './ThemeContext';
 import { AttributeList } from './AttributeList';
@@ -357,6 +357,20 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     <label className={`text-xs ${theme === 'dark' ? 'text-slate-400' : 'text-gray-500'}`}>Libellé</label>
                     <input ref={assocLabelRef} type="text" value={selectedAssoc.label} onChange={(e) => onUpdateAssociation({ ...selectedAssoc, label: e.target.value })} className={`w-full border rounded px-2 py-1 text-sm font-bold transition-colors ${theme === 'dark' ? 'bg-slate-700 border-slate-600 text-slate-100' : 'bg-white border-gray-300 text-slate-900'}`} />
                   </div>
+                  {/* Relation Type Selector */}
+                  <div>
+                    <label className={`text-xs ${theme === 'dark' ? 'text-slate-400' : 'text-gray-500'}`}>Type de relation</label>
+                    <select
+                      value={selectedAssoc.relationType || ''}
+                      onChange={(e) => onUpdateAssociation({ ...selectedAssoc, relationType: e.target.value ? e.target.value as RelationType : undefined })}
+                      className={`w-full border rounded px-2 py-1 text-sm transition-colors ${theme === 'dark' ? 'bg-slate-700 border-slate-600 text-slate-100' : 'bg-white border-gray-300 text-slate-900'}`}
+                    >
+                      <option value="">Basique (sans flèche)</option>
+                      <option value="association">Association (flèche creuse)</option>
+                      <option value="inheritance">Héritage (triangle vide)</option>
+                      <option value="interface">Interface (pointillé)</option>
+                    </select>
+                  </div>
                   {/* Entity Name Field */}
                   <div>
                     <label className={`text-xs flex items-center gap-1 ${theme === 'dark' ? 'text-slate-400' : 'text-gray-500'}`}>
@@ -443,14 +457,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
             ) : (
               <div className="space-y-2 mt-4">
                 <h4 className={`text-xs font-bold ${theme === 'dark' ? 'text-slate-300' : 'text-gray-700'}`}>Liste des relations</h4>
-                {associations.map(a => (
-                  <div
-                    key={a.id}
-                    className={`p-2 border rounded text-xs flex justify-between group transition-colors ${theme === 'dark' ? 'bg-slate-700 border-slate-600 text-slate-100' : 'bg-white border-gray-200 text-slate-900'}`}
-                  >
-                    <span>{a.label} <span className={theme === 'dark' ? 'text-slate-400' : 'text-gray-400'}>({a.connections.length} liens)</span></span>
-                  </div>
-                ))}
+                {associations.map(a => {
+                  const typeLabel = !a.relationType ? 'Basique' : a.relationType === 'inheritance' ? 'Héritage' : a.relationType === 'interface' ? 'Interface' : 'Association';
+                  return (
+                    <div
+                      key={a.id}
+                      className={`p-2 border rounded text-xs flex justify-between group transition-colors ${theme === 'dark' ? 'bg-slate-700 border-slate-600 text-slate-100' : 'bg-white border-gray-200 text-slate-900'}`}
+                    >
+                      <span>{a.label} <span className={theme === 'dark' ? 'text-slate-400' : 'text-gray-400'}>({a.connections.length} liens)</span></span>
+                      <span className={`text-[10px] px-1.5 py-0.5 rounded ${theme === 'dark' ? 'bg-slate-600 text-slate-300' : 'bg-gray-100 text-gray-500'}`}>{typeLabel}</span>
+                    </div>
+                  );
+                })}
               </div>
             )}
           </div>

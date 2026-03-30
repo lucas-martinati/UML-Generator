@@ -21,6 +21,8 @@ export interface Connection {
   cardinality: string; // e.g., "0..1", "1..n"
 }
 
+export type RelationType = 'association' | 'inheritance' | 'interface';
+
 export interface Association {
   id: string;
   label: string; // The verb (e.g., "appartient", "possède")
@@ -32,6 +34,7 @@ export interface Association {
   attributes: Attribute[]; // For "Entité-Association"
   connections: Connection[]; // Supports n-ary (1, 2, 3...)
   isLabelMovable?: boolean; // For binary associations: can the label be moved freely?
+  relationType?: RelationType; // Type of UML relation arrow
 }
 
 export interface Point {

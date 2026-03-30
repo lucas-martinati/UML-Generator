@@ -551,9 +551,16 @@ export const DiagramCanvas: React.FC<DiagramCanvasProps> = ({
           stroke={isSelected ? "#3b82f6" : (theme === 'dark' ? '#94a3b8' : 'black')}
           strokeWidth={isSelected ? 2.5 : 1.5}
           fill="none"
+          markerEnd={
+            assoc.relationType === 'inheritance' ? 'url(#inheritance-marker)' :
+            assoc.relationType === 'interface' ? 'url(#interface-marker)' :
+            assoc.relationType === 'association' ? 'url(#association-marker)' :
+            undefined
+          }
+          strokeDasharray={assoc.relationType === 'interface' ? '8,4' : undefined}
         />
         {/* Selection highlight */}
-        {isSelected && (
+        {(!assoc.relationType || assoc.relationType === 'association') && isSelected && (
           <rect
             x={labelCenterX - assoc.label.length * 4 - 5} y={labelCenterY - 12}
             width={assoc.label.length * 8 + 10} height={24}
@@ -561,42 +568,48 @@ export const DiagramCanvas: React.FC<DiagramCanvasProps> = ({
           />
         )}
         {/* Label - centered on labelCenterX */}
-        <text
-          x={labelCenterX} y={labelCenterY + 4} textAnchor="middle"
-          style={{
-            paintOrder: 'stroke',
-            stroke: theme === 'dark' ? '#1e293b' : 'white',
-            strokeWidth: '4px',
-            fill: isSelected ? '#3b82f6' : (theme === 'dark' ? '#f1f5f9' : 'black'),
-            fontSize: '13px', fontWeight: 'bold',
-          }}
-        >
-          {assoc.label}
-        </text>
+        {!assoc.relationType || assoc.relationType === 'association' ? (
+          <text
+            x={labelCenterX} y={labelCenterY + 4} textAnchor="middle"
+            style={{
+              paintOrder: 'stroke',
+              stroke: theme === 'dark' ? '#1e293b' : 'white',
+              strokeWidth: '4px',
+              fill: isSelected ? '#3b82f6' : (theme === 'dark' ? '#f1f5f9' : 'black'),
+              fontSize: '13px', fontWeight: 'bold',
+            }}
+          >
+            {assoc.label}
+          </text>
+        ) : null}
         {/* Cardinality 1 */}
-        <text
-          x={card1X} y={card1Y} textAnchor="middle"
-          style={{
-            paintOrder: 'stroke', stroke: theme === 'dark' ? '#1e293b' : 'white',
-            strokeWidth: '5px', fill: theme === 'dark' ? '#a78bfa' : '#7c3aed',
-            fontSize: '13px', fontWeight: 'bold', cursor: 'pointer',
-          }}
-          onClick={(e) => { e.stopPropagation(); onSelect(assoc.id, 'association'); onCardinalityClick?.(assoc.id, 0); }}
-        >
-          {assoc.connections[0].cardinality}
-        </text>
+        {!assoc.relationType || assoc.relationType === 'association' ? (
+          <text
+            x={card1X} y={card1Y} textAnchor="middle"
+            style={{
+              paintOrder: 'stroke', stroke: theme === 'dark' ? '#1e293b' : 'white',
+              strokeWidth: '5px', fill: theme === 'dark' ? '#a78bfa' : '#7c3aed',
+              fontSize: '13px', fontWeight: 'bold', cursor: 'pointer',
+            }}
+            onClick={(e) => { e.stopPropagation(); onSelect(assoc.id, 'association'); onCardinalityClick?.(assoc.id, 0); }}
+          >
+            {assoc.connections[0].cardinality}
+          </text>
+        ) : null}
         {/* Cardinality 2 */}
-        <text
-          x={card2X} y={card2Y} textAnchor="middle"
-          style={{
-            paintOrder: 'stroke', stroke: theme === 'dark' ? '#1e293b' : 'white',
-            strokeWidth: '5px', fill: theme === 'dark' ? '#a78bfa' : '#7c3aed',
-            fontSize: '13px', fontWeight: 'bold', cursor: 'pointer',
-          }}
-          onClick={(e) => { e.stopPropagation(); onSelect(assoc.id, 'association'); onCardinalityClick?.(assoc.id, 1); }}
-        >
-          {assoc.connections[1].cardinality}
-        </text>
+        {!assoc.relationType || assoc.relationType === 'association' ? (
+          <text
+            x={card2X} y={card2Y} textAnchor="middle"
+            style={{
+              paintOrder: 'stroke', stroke: theme === 'dark' ? '#1e293b' : 'white',
+              strokeWidth: '5px', fill: theme === 'dark' ? '#a78bfa' : '#7c3aed',
+              fontSize: '13px', fontWeight: 'bold', cursor: 'pointer',
+            }}
+            onClick={(e) => { e.stopPropagation(); onSelect(assoc.id, 'association'); onCardinalityClick?.(assoc.id, 1); }}
+          >
+            {assoc.connections[1].cardinality}
+          </text>
+        ) : null}
         {/* Entity box for associations with attributes */}
         {hasAttributes && (() => {
           const displayName = assoc.entityName && assoc.entityName.trim() !== '' ? assoc.entityName : assoc.label;
@@ -795,9 +808,16 @@ export const DiagramCanvas: React.FC<DiagramCanvasProps> = ({
             y2={finalBorder2.y}
             stroke={isSelected ? "#3b82f6" : (theme === 'dark' ? '#94a3b8' : 'black')}
             strokeWidth={isSelected ? 2.5 : 1.5}
+            markerEnd={
+              assoc.relationType === 'inheritance' ? 'url(#inheritance-marker)' :
+              assoc.relationType === 'interface' ? 'url(#interface-marker)' :
+              assoc.relationType === 'association' ? 'url(#association-marker)' :
+              undefined
+            }
+            strokeDasharray={assoc.relationType === 'interface' ? '8,4' : undefined}
           />
           {/* Selection highlight behind label */}
-          {isSelected && (
+          {!assoc.relationType || assoc.relationType === 'association' ? isSelected && (
             <rect
               x={midX - 40}
               y={midY - 18}
@@ -808,61 +828,66 @@ export const DiagramCanvas: React.FC<DiagramCanvasProps> = ({
               strokeWidth={2}
               rx={4}
             />
-          )}
+          ) : null}
           {/* Label at center */}
-          <text
-            x={midX}
-            y={midY - 2}
-            textAnchor="middle"
-            style={{
-              paintOrder: 'stroke',
-              stroke: theme === 'dark' ? '#1e293b' : 'white',
-              strokeWidth: '4px',
-              fill: isSelected ? '#3b82f6' : (theme === 'dark' ? '#f1f5f9' : 'black'),
-              fontSize: '13px',
-              fontWeight: 'bold',
-            }}
-          >
-            {assoc.label}
-          </text>
+          {!assoc.relationType || assoc.relationType === 'association' ? (
+            <text
+              x={midX}
+              y={midY - 2}
+              textAnchor="middle"
+              style={{
+                paintOrder: 'stroke',
+                stroke: theme === 'dark' ? '#1e293b' : 'white',
+                strokeWidth: '4px',
+                fill: isSelected ? '#3b82f6' : (theme === 'dark' ? '#f1f5f9' : 'black'),
+                fontSize: '13px',
+                fontWeight: 'bold',
+              }}
+            >
+              {assoc.label}
+            </text>
+          ) : null}
           {/* Cardinality 1 */}
-          <text
-            x={card1Pos.x}
-            y={card1Pos.y + 4}
-            textAnchor="middle"
-            style={{
-              paintOrder: 'stroke',
-              stroke: theme === 'dark' ? '#1e293b' : 'white',
-              strokeWidth: '5px',
-              fill: theme === 'dark' ? '#a78bfa' : '#7c3aed',
-              fontSize: '13px',
-              fontWeight: 'bold',
-              cursor: 'pointer',
-              filter: theme === 'dark' ? 'none' : 'drop-shadow(0 0 1px rgba(124, 58, 237, 0.5))',
-            }}
-            onClick={(e) => {
-              e.stopPropagation();
-              onSelect(assoc.id, 'association');
-              onCardinalityClick?.(assoc.id, 0);
-            }}
-          >
-            {assoc.connections[0].cardinality}
-          </text>
+          {!assoc.relationType || assoc.relationType === 'association' ? (
+            <text
+              x={card1Pos.x}
+              y={card1Pos.y + 4}
+              textAnchor="middle"
+              style={{
+                paintOrder: 'stroke',
+                stroke: theme === 'dark' ? '#1e293b' : 'white',
+                strokeWidth: '5px',
+                fill: theme === 'dark' ? '#a78bfa' : '#7c3aed',
+                fontSize: '13px',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+                filter: theme === 'dark' ? 'none' : 'drop-shadow(0 0 1px rgba(124, 58, 237, 0.5))',
+              }}
+              onClick={(e) => {
+                e.stopPropagation();
+                onSelect(assoc.id, 'association');
+                onCardinalityClick?.(assoc.id, 0);
+              }}
+            >
+              {assoc.connections[0].cardinality}
+            </text>
+          ) : null}
           {/* Cardinality 2 */}
-          <text
-            x={card2Pos.x}
-            y={card2Pos.y + 4}
-            textAnchor="middle"
-            style={{
-              paintOrder: 'stroke',
-              stroke: theme === 'dark' ? '#1e293b' : 'white',
-              strokeWidth: '5px',
-              fill: theme === 'dark' ? '#a78bfa' : '#7c3aed',
-              fontSize: '13px',
-              fontWeight: 'bold',
-              cursor: 'pointer',
-              filter: theme === 'dark' ? 'none' : 'drop-shadow(0 0 2px rgba(124, 58, 237, 0.5))',
-            }}
+          {!assoc.relationType || assoc.relationType === 'association' ? (
+            <text
+              x={card2Pos.x}
+              y={card2Pos.y + 4}
+              textAnchor="middle"
+              style={{
+                paintOrder: 'stroke',
+                stroke: theme === 'dark' ? '#1e293b' : 'white',
+                strokeWidth: '5px',
+                fill: theme === 'dark' ? '#a78bfa' : '#7c3aed',
+                fontSize: '13px',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+                filter: theme === 'dark' ? 'none' : 'drop-shadow(0 0 2px rgba(124, 58, 237, 0.5))',
+              }}
             onClick={(e) => {
               e.stopPropagation();
               onSelect(assoc.id, 'association');
@@ -871,6 +896,7 @@ export const DiagramCanvas: React.FC<DiagramCanvasProps> = ({
           >
             {assoc.connections[1].cardinality}
           </text>
+          ) : null}
 
           {/* Entity Box for associations with attributes */}
           {assoc.attributes.length > 0 && (() => {
@@ -984,31 +1010,40 @@ export const DiagramCanvas: React.FC<DiagramCanvasProps> = ({
           y2={borderE.y}
           stroke={theme === 'dark' ? '#94a3b8' : 'black'}
           strokeWidth="1.5"
+          markerEnd={
+            assoc.relationType === 'inheritance' ? 'url(#inheritance-marker)' :
+            assoc.relationType === 'interface' ? 'url(#interface-marker)' :
+            assoc.relationType === 'association' ? 'url(#association-marker)' :
+            undefined
+          }
+          strokeDasharray={assoc.relationType === 'interface' ? '8,4' : undefined}
         />
-        <text
-          x={cardPos.x}
-          y={cardPos.y + 4}
-          textAnchor="middle"
-          style={{
-            paintOrder: 'stroke',
-            stroke: theme === 'dark' ? '#1e293b' : 'white',
-            strokeWidth: '5px',
-            strokeLinecap: 'butt',
-            strokeLinejoin: 'round',
-            fill: theme === 'dark' ? '#a78bfa' : '#7c3aed',
-            fontSize: '13px',
-            fontWeight: 'bold',
-            cursor: 'pointer',
-            filter: theme === 'dark' ? 'none' : 'drop-shadow(0 0 2px rgba(124, 58, 237, 0.5))',
-          }}
-          onClick={(e) => {
-            e.stopPropagation();
-            onSelect(assoc.id, 'association');
-            onCardinalityClick?.(assoc.id, connIndex);
-          }}
-        >
-          {conn.cardinality}
-        </text>
+        {!assoc.relationType || assoc.relationType === 'association' ? (
+          <text
+            x={cardPos.x}
+            y={cardPos.y + 4}
+            textAnchor="middle"
+            style={{
+              paintOrder: 'stroke',
+              stroke: theme === 'dark' ? '#1e293b' : 'white',
+              strokeWidth: '5px',
+              strokeLinecap: 'butt',
+              strokeLinejoin: 'round',
+              fill: theme === 'dark' ? '#a78bfa' : '#7c3aed',
+              fontSize: '13px',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              filter: theme === 'dark' ? 'none' : 'drop-shadow(0 0 2px rgba(124, 58, 237, 0.5))',
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+              onSelect(assoc.id, 'association');
+              onCardinalityClick?.(assoc.id, connIndex);
+            }}
+          >
+            {conn.cardinality}
+          </text>
+        ) : null}
       </g>
     );
   };
@@ -1028,6 +1063,18 @@ export const DiagramCanvas: React.FC<DiagramCanvasProps> = ({
         <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
           <path d="M 40 0 L 0 0 0 40" fill="none" stroke={theme === 'dark' ? '#334155' : '#e2e8f0'} strokeWidth="1" />
         </pattern>
+        {/* Inheritance: empty triangle */}
+        <marker id="inheritance-marker" markerWidth="16" markerHeight="16" refX="15" refY="8" orient="auto" markerUnits="userSpaceOnUse">
+          <polygon points="0,1 15,8 0,15" fill="white" stroke="context-stroke" strokeWidth="1.5" />
+        </marker>
+        {/* Interface: empty triangle (line will be dashed) */}
+        <marker id="interface-marker" markerWidth="16" markerHeight="16" refX="15" refY="8" orient="auto" markerUnits="userSpaceOnUse">
+          <polygon points="0,1 15,8 0,15" fill="white" stroke="context-stroke" strokeWidth="1.5" />
+        </marker>
+        {/* Association: open/hollow arrow */}
+        <marker id="association-marker" markerWidth="12" markerHeight="12" refX="11" refY="6" orient="auto" markerUnits="userSpaceOnUse">
+          <polyline points="0,0 11,6 0,12" fill="none" stroke="context-stroke" strokeWidth="1.5" />
+        </marker>
       </defs>
 
       {/* Background Grid - Transformed with view */}
